@@ -1,0 +1,40 @@
+/* Navbar Styling */
+.navbar {
+    background-color: #000000 !important; /* Set background color of navbar to black */
+    border: 2px solid white; /* Add a white border around the navbar */
+    border-radius: 10px; /* Optional: rounded corners for the border */
+    margin: 20px; /* Add margin to create space around the navbar */
+}
+
+.navbar-brand {
+    color: #FF6500 !important; /* Set text color of the brand name to #FF6500 */
+    font-weight: bold; /* Optional: make the brand name bold */
+    font-size: 1.5rem; /* Optional: adjust the font size */
+}
+
+.navbar-brand:hover {
+    color: #FF6500; /* Keep color same on hover */
+}
+
+.navbar-nav .nav-link {
+    color: #FFFFFF !important; /* Set text color of nav links to white */
+    font-size: 1.1rem; /* Optional: adjust the font size */
+    display: flex;
+    align-items: center; /* Align icon and text vertically */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FF6500 !important; /* Set hover color of nav links to #FF6500 */
+}
+
+.navbar-nav .nav-link i {
+    margin-right: 8px; /* Add space between icon and text */
+}
+
+.navbar-toggler-icon {
+    background-color: #FF6500; /* Set the burger icon color to #FF6500 */
+}
+
+.navbar-toggler {
+    border-color: #FF6500; /* Optional: Set the border color of the navbar toggler to #FF6500 */
+}
