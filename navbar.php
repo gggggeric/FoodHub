@@ -15,9 +15,33 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
+    <div class="container d-flex align-items-center">
         <!-- Left-aligned Brand -->
         <a class="navbar-brand" href="#">FoodHub</a>
+
+        <!-- Search Form placed next to the FoodHub title -->
+        <div class="d-flex ms-3 align-items-center">
+            <form class="d-flex" method="GET" action="index.php">
+                <input class="form-control me-2" type="search" placeholder="Search Products" aria-label="Search" name="search" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Category Filter Form placed next to the Search Form -->
+        <div class="d-flex ms-3 align-items-center">
+            <form method="GET" action="index.php" class="d-flex">
+                <select class="form-select" name="category" id="category" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?php echo htmlspecialchars($category['category']); ?>" <?php echo ($category['category'] == $categoryFilter) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($category['category']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
 
         <!-- Toggler button for mobile view -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,11 +57,10 @@
                     </a>
                 </li>
                 <li class="nav-item">
-    <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#orderModal">
-        <i class="fas fa-box"></i> Orders
-    </a>
-</li>
-
+                    <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#orderModal">
+                        <i class="fas fa-box"></i> Orders
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#cartModal">

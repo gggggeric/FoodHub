@@ -1,5 +1,56 @@
 
 <?php include 'db.php'; ?>
+<?php
+include 'db.php';
+
+// Initialize the search query, category filter, and results
+$searchQuery = '';
+$categoryFilter = '';
+$products = [];
+$categories = [];
+
+// Fetch all unique categories from the database
+$stmt = $conn->query("SELECT DISTINCT category FROM products");
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Check if a search query is provided
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    $searchQuery = $_GET['search'];
+}
+
+// Check if a category filter is selected
+if (isset($_GET['category']) && !empty($_GET['category'])) {
+    $categoryFilter = $_GET['category'];
+}
+
+// Build the base SQL query
+$sql = "SELECT * FROM products WHERE name LIKE :searchQuery";
+
+// If a category filter is selected, add it to the SQL query
+if (!empty($categoryFilter)) {
+    $sql .= " AND category = :categoryFilter";
+}
+
+// Prepare and execute the query
+$stmt = $conn->prepare($sql);
+
+// Define parameters to bind
+$params = [
+    'searchQuery' => "%" . $searchQuery . "%"
+];
+
+// Add category filter to parameters if provided
+if (!empty($categoryFilter)) {
+    $params['categoryFilter'] = $categoryFilter;
+}
+
+// Execute the query with the parameters
+$stmt->execute($params);
+
+// Fetch matching products
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,33 +153,44 @@ body {
 </head>
 <body style="background-color: #000000;">
 <?php include 'navbar.php'; ?>
-
-<!-- Product Section -->
-
-<!-- Product Section -->
-<div class="mt-5">
-    <h1 class="text-center" style="color: #FF6500;">Our Products</h1>
+<!-- Product Section (Search Results or All Products) -->
+<div class="container mt-5">
+    <h1 class="text-center">
+        <?php 
+            if (isset($_GET['search']) && !empty($_GET['search'])) {
+                echo 'Search Results'; // Display "Search Results" if search is applied
+            } elseif (isset($_GET['category']) && !empty($_GET['category'])) {
+                echo 'Category: ' . htmlspecialchars($_GET['category']); // Display selected category
+            } else {
+             
+            }
+        ?>
+    </h1>
+    
     <div class="product-container">
-        <div class="product-row">
-            <?php
-            $stmt = $conn->query("SELECT * FROM products");
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { ?>
-                <div class="col-md-3 mt-3">
-                    <div class="card">
-                        <img src="images/<?php echo $row['image']; ?>" class="card-img-top" alt="<?php echo $row['name']; ?>">
-                        <div class="card-body">
-                            <h5 class="card-title"><?php echo $row['name']; ?></h5>
-                            <p class="card-text"><?php echo $row['description']; ?></p>
-                            <p><strong>Price:</strong> $<?php echo $row['price']; ?></p>
-                            <p><strong>Category:</strong> <?php echo $row['category']; ?></p>
-                            <button class="btn btn-warning" onclick="addToCart(<?php echo $row['productid']; ?>, '<?php echo addslashes($row['name']); ?>', <?php echo $row['price']; ?>)">Add to Cart</button>
+        <div class="product-row row"> <!-- Ensure 'row' class is added for Bootstrap grid -->
+            <?php if ($products): ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="col-md-3 mt-3"> <!-- You can adjust 'col-md-3' based on how many products per row you want -->
+                        <div class="card">
+                            <img src="images/<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                            <div class="card-body">
+                                <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
+                                <p class="card-text"><?php echo htmlspecialchars($product['description']); ?></p>
+                                <p><strong>Price:</strong> $<?php echo htmlspecialchars($product['price']); ?></p>
+                                <p><strong>Category:</strong> <?php echo htmlspecialchars($product['category']); ?></p>
+                                <button class="btn btn-warning" onclick="addToCart(<?php echo $product['productid']; ?>, '<?php echo addslashes($product['name']); ?>', <?php echo $product['price']; ?>)">Add to Cart</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php } ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-center">No products found.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
+
 <!-- Order Modal -->
 <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -375,6 +437,26 @@ const cartModal = document.getElementById('cartModal');
 cartModal.addEventListener('shown.bs.modal', function () {
     loadCartItems();
 });
+
+// Function to search the page title
+function searchTitle() {
+    let searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    let pageTitle = document.title.toLowerCase();
+
+    // Check if the search query is present in the document title
+    if (pageTitle.includes(searchQuery)) {
+        console.log("Search match found in title!");
+        // You can perform some action here if a match is found
+        // For example, show a message or change the page content dynamically
+    } else {
+        console.log("No match found in title.");
+        // You can perform some action if no match is found
+    }
+}
+
+</script>
+
+
 </script>
 </script>
 </body>
